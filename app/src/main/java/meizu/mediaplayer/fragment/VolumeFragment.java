@@ -15,7 +15,7 @@ import meizu.mediaplayer.MyApplication;
  * @Project MediaPlayer
  * @Package meizu.mediaplayer.fragment
  * @Date 2015/10/25 10:50
- * @description TODO
+ * @description 音量调节页面
  */
 public class VolumeFragment extends Fragment {
 

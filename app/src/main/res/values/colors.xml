@@ -6,4 +6,5 @@
     <color name="tab_indicator_selected">#005180</color>
     <color name="tab_text_selected">#43ef93</color>
     <color name="tab_text_normal">#aca49f9f</color>
+    <color name="windowBackground">#ffffff</color>
 </resources>

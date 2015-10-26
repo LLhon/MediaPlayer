@@ -15,7 +15,7 @@ import meizu.mediaplayer.MyApplication;
  * @Project MediaPlayer
  * @Package meizu.mediaplayer.fragment
  * @Date 2015/10/25 10:49
- * @description TODO
+ * @description 歌曲歌词显示页面
  */
 public class LrcFragment extends Fragment {
     @Override

@@ -1,16 +1,25 @@
 package meizu.mediaplayer;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -18,6 +27,8 @@ import meizu.mediaplayer.factory.FragmentFactory;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    @InjectView(R.id.toolbar)
+    Toolbar mToolbar;
     @InjectView(R.id.viewpager)
     ViewPager mViewPager;
     @InjectView(R.id.drawerlayout)
@@ -50,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int INDEX_1 = 1;
     public static final int INDEX_2 = 2;
     public static final int INDEX_3 = 3;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onPageSelected(int position) {
                 int i = tabs[position];
                 selectTab(i);
+                //colorChange(position);
             }
 
             @Override
@@ -82,6 +95,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    /**
+     * 界面颜色的更改
+     * @param position
+     */
+    @SuppressLint("NewApi")
+    private void colorChange(int position) {
+        //用来提取颜色的Bitmap
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), FragmentFactory.getFragment(position).getId());
+        System.out.println("fragmentId: " + FragmentFactory.getFragment(position).getId());
+        System.out.println("Bitmap: " + bitmap);
+        Palette.generateAsync(bitmap, new Palette.PaletteAsyncListener() {
+            @Override
+            public void onGenerated(Palette palette) {
+                Palette.Swatch vibrant = palette.getVibrantSwatch();
+                mToolbar.setBackgroundColor(vibrant.getRgb());
+            }
+        });
+    }
+
+    /**
+     * 切换Tab标签的选中样式
+     * @param position
+     */
     private void selectTab(int position) {
         ib_play.setSelected(false);
         ib_list.setSelected(false);
@@ -91,6 +127,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switchImageButton(position);
     }
 
+    /**
+     * 初始化Tab标签的选中样式
+     */
     public void initData() {
         ib_play.setSelected(true);
         ib_list.setSelected(false);
@@ -102,16 +141,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ib_lrc.setOnClickListener(this);
         ib_volumn.setOnClickListener(this);
 
+        initToolbar();
+    }
 
+    /**
+     * 初始化Toolbar
+     */
+    public void initToolbar() {
+        mToolbar.setTitle("天天动听");
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+        mDrawerToggle.syncState();
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_settings:
+                        Toast.makeText(MainActivity.this, "action_settings", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.ab_search:
+                        Toast.makeText(MainActivity.this, "action_search", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.action_share:
+                        Toast.makeText(MainActivity.this, "action_share", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         switchImageButton(v.getId());
+        //设置当前默认的Pager页面
         mViewPager.setCurrentItem(tabIndex);
+        //通知数据更新
         mAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * 设置Tab标签的样式和索引
+     * @param id
+     */
     public void switchImageButton(int id) {
         switch (id) {
             case R.id.ib_top_play:
@@ -145,7 +220,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public int getCount() {
-            return 4;
+            return tabs.length;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return true;
     }
 }

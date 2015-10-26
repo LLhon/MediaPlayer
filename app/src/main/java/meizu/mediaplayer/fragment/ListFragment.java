@@ -17,7 +17,7 @@ import meizu.mediaplayer.utils.MediaUtils;
  * @Project MediaPlayer
  * @Package meizu.mediaplayer.fragment
  * @Date 2015/10/25 10:49
- * @description TODO
+ * @description 歌曲列表页面
  */
 public class ListFragment extends BaseFragment {
 
@@ -31,9 +31,6 @@ public class ListFragment extends BaseFragment {
         //ButterKnife.inject(view);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         //设置布局管理器
-        //System.out.println("view: "+view);
-        //System.out.println("getContext: " + getContext());
-        //System.out.println("mRecyclerView: " + mRecyclerView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //设置添加item, 移除item动画
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());

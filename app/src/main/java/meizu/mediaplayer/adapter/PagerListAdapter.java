@@ -24,6 +24,7 @@ public class PagerListAdapter extends RecyclerView.Adapter<PagerListAdapter.List
 
     private Context mContext;
     private final List<Music> mMusicList;
+    private int i = 0;
 
     public PagerListAdapter(Context context) {
         this.mContext = context;
@@ -47,6 +48,8 @@ public class PagerListAdapter extends RecyclerView.Adapter<PagerListAdapter.List
         holder.tv_title.setText(mMusicList.get(position).getTitle());
         //显示歌曲专辑
         holder.tv_artist.setText(mMusicList.get(position).getArtist());
+        //显示歌曲索引
+        holder.tv_index.setText(++i + "");
     }
 
     /**
@@ -69,11 +72,13 @@ public class PagerListAdapter extends RecyclerView.Adapter<PagerListAdapter.List
 
         TextView tv_artist;
         TextView tv_title;
+        TextView tv_index;
 
         public ListViewHolder(View v) {
             super(v);
             tv_artist = (TextView) v.findViewById(R.id.tv_artist);
             tv_title = (TextView) v.findViewById(R.id.tv_title);
+            tv_index = (TextView) v.findViewById(R.id.tv_index);
         }
     }
 }
