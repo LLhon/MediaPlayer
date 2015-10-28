@@ -13,6 +13,9 @@ import android.content.Context;
 public class MyApplication extends Application {
 
     private static Context context;
+    public static final int MUSIC_START = 0;
+    public static final int MUSIC_STOP = 1;
+
 
     @Override
     public void onCreate() {
