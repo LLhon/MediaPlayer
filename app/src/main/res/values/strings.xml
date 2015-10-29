@@ -2,5 +2,11 @@
     <string name="app_name">MediaPlayer</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
+    <string name="delete_music">您确定要删除此歌曲?</string>
+    <string name="title">提示: </string>
+    <string name="positive">确定</string>
+    <string name="negative">取消</string>
+    <string name="start_music">start</string>
+    <string name="toolbar_title">天天动听</string>
 
 </resources>

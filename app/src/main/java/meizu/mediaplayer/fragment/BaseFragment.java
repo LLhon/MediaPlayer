@@ -26,6 +26,13 @@ public abstract class BaseFragment extends Fragment {
         mContext = getActivity();
     }
 
+    /**
+     * 只执行一次
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,6 +46,12 @@ public abstract class BaseFragment extends Fragment {
     protected abstract View initView(LayoutInflater inflater, ViewGroup container);
 
     protected void initData() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
     }
 }

@@ -1,9 +1,15 @@
 package meizu.mediaplayer;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -23,7 +29,10 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import de.greenrobot.event.EventBus;
 import meizu.mediaplayer.factory.FragmentFactory;
+import meizu.mediaplayer.service.MusicService;
+import meizu.mediaplayer.utils.DebugUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -63,6 +72,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final int INDEX_3 = 3;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+        }
+    };
+    private IMusicService mIService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -93,6 +111,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+        //启动服务
+        Intent service = new Intent(this, MusicService.class);
+        bindService(service, new MusicConn(), 0);
+
+        //注册EventBus事件
+        EventBus.getDefault().register(this);
+    }
+
+    class MusicConn implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mIService = IMusicService.Stub.asInterface(service);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            DebugUtil.showToast(MainActivity.this, name.getPackageName());
+        }
+    }
+
+    public void onEventMainThread(int params) {
+        DebugUtil.println("------------->> onEventMainThread");
+        switch (params) {
+            case 0:
+                ib_bottom_play.setSelected(true);
+                notifyAll();
+                break;
+        }
     }
 
     /**
@@ -135,11 +181,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ib_list.setSelected(false);
         ib_lrc.setSelected(false);
         ib_volumn.setSelected(false);
+        ib_bottom_play.setSelected(false);
 
         ib_play.setOnClickListener(this);
         ib_list.setOnClickListener(this);
         ib_lrc.setOnClickListener(this);
         ib_volumn.setOnClickListener(this);
+        ib_bottom_play.setOnClickListener(this);
 
         initToolbar();
     }
@@ -148,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 初始化Toolbar
      */
     public void initToolbar() {
-        mToolbar.setTitle("天天动听");
+        mToolbar.setTitle(R.string.toolbar_title);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
@@ -205,6 +253,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ib_volumn.setSelected(true);
                 tabIndex = INDEX_3;
                 break;
+            case R.id.ib_bottom_play:
+                DebugUtil.println("---------->>>>>>>");
+                EventBus.getDefault().post(MyApplication.MUSIC_START);
+                ib_bottom_play.setSelected(true);
+                //mIService.startMusic();
         }
     }
 
@@ -222,11 +275,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public int getCount() {
             return tabs.length;
         }
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //反注册EventBus事件
+        EventBus.getDefault().unregister(this);
     }
 }

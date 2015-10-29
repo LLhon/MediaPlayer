@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ListItemLinearLayout"
+    android:id="@+id/recyclerview_item"
     android:layout_width="fill_parent"
     android:layout_height="70dp"
     android:background="#38e7e7e7">
